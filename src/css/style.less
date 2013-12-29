@@ -1,0 +1,62 @@
+@import "normalize";
+@import "foundation";
+
+html,body {
+	font-size: 12px;
+}
+
+body {
+	background-color: #eee;
+	background-image: url('../img/grey.png'), url('../img/hob.jpg');
+	background-size: 397px 322px, auto 500px;
+	background-position: center center, center center;
+	background-attachment: fixed, fixed;
+}
+
+.row {
+	max-width: 80em;
+}
+
+#chooseTheme, #copyTheme, #fetchingData, #downloadingImages, #location, #finished {
+	display: none;
+}
+
+section {
+	background-color: rgba(255, 255, 255, 0.33);
+	border-radius: 5px;
+	border-color: none;
+	margin: 0;
+	padding: 3px 10px;
+	box-shadow: rgba(0,0,0,0.2) 0 0 6px;
+}
+
+#welcome .buttonwrap {
+	margin-top: 1em;
+	text-align: center;
+}
+
+#welcome {
+	margin-top: 6em;
+}
+
+#location {
+	margin-top: 8em;
+}
+
+#downloadingImages {
+	margin-top: 7em;
+}
+
+#fetchingData {
+	margin-top: 8em;
+}
+
+#finished {
+	margin: 8em;
+
+	h2 {
+		display: block;
+		text-align: center;
+		font-weight: bolder;
+	}
+}
