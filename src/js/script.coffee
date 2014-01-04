@@ -136,7 +136,8 @@ donwloadNextImage = (data, ip) ->
 		).on(
 			'error'
 			(e) ->
-				console.log "Got error: #{e.message}"
+				console.log("Error:", e)
+				donwloadNextImage(data, ip)
 		)
 
 		perc = Math.round(currentImage / data.length * 100)
