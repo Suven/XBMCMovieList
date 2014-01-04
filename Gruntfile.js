@@ -84,7 +84,10 @@ module.exports = function(grunt) {
         'dist/**/*.less',
         'dist/**/*.psd',
         'dist/**/*.bak',
-        'dist/themes/**/node_modules/**/*',
+        'dist/themes/**/node_modules',
+        'dist/**/Gruntfile.js',
+        'dist/**/LICENSE',
+        'dist/**/README.md',
       ],
     },
     watch: {
@@ -108,5 +111,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['clean:before', 'copy', 'coffee', 'less', 'uglify', 'htmlmin', 'clean:after', 'imagemin', 'nodewebkit']);
   grunt.registerTask('dev', ['coffee', 'less']);
+  grunt.registerTask('fastbuild', ['clean:before', 'copy', 'coffee', 'less', 'nodewebkit']);
 
 };
