@@ -222,7 +222,7 @@ $ ->
 		)
 
 	$('#openList').click ->
-		link = fs.realpathSync './out'
+		link = fs.realpathSync outFolder
 		gui.Shell.openExternal "file://#{link}/index.html"
 		console.log link
 
