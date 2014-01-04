@@ -1,3 +1,6 @@
 [submodule "src/themes/beauty"]
 	path = src/themes/beauty
 	url = https://github.com/Suven/theme_beauty.git
+[submodule "src/themes/coverwrap"]
+	path = src/themes/coverwrap
+	url = https://github.com/Suven/theme_coverwrap.git
