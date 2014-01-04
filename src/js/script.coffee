@@ -6,6 +6,8 @@ Stream = require 'stream'
 ncp = require('ncp').ncp
 gui = require('nw.gui')
 
+numberOfImageDlTries = 5
+
 userHome = ->
 	process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
 
@@ -122,7 +124,7 @@ chooseTheme = ->
 	)
 
 currentImage = 0
-donwloadNextImage = (data, ip) ->
+donwloadNextImage = (data, ip, attempt = 1) ->
 	if currentImage < data.length
 		mov = data[currentImage]
 		imageUrl = getImagePath(mov,ip)
@@ -136,8 +138,12 @@ donwloadNextImage = (data, ip) ->
 		).on(
 			'error'
 			(e) ->
-				console.log("Error:", e)
-				donwloadNextImage(data, ip)
+				console.log("Error downloading a thumb (try #{attempt}:", e)
+
+				if attempt < numberOfImageDlTries
+					currentImage--
+
+				donwloadNextImage(data, ip, attempt++)
 		)
 
 		perc = Math.round(currentImage / data.length * 100)
