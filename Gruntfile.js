@@ -6,8 +6,8 @@ module.exports = function(grunt) {
         build_dir: './build',
         mac: true,
         win: true,
-        linux32: false,
-        linux64: false,
+        linux32: true,
+        linux64: true,
         mac_icns: "mac_icon.icns"
       },
       src: './dist/**/*'
