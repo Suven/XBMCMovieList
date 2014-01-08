@@ -18,7 +18,7 @@ That has to be done in the projects root-folder as well as in the subdir `src`.
 
 After that you can run
     
-    grunt
+    grunt release
 
 and will find your binary in `build`
 

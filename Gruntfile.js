@@ -96,6 +96,43 @@ module.exports = function(grunt) {
         'src/**/*.less',
       ],
       tasks: ['dev']
+    },
+    compress: {
+      options: {
+        pretty: true
+      },
+      osx: {
+        options: {
+          archive: 'build/releases/osx_unstable.zip'
+        },
+        files: [
+          {src: ['build/releases/MovieList/mac/**']}
+        ]
+      },
+      win: {
+        options: {
+          archive: 'build/releases/win_unstable.zip'
+        },
+        files: [
+          {src: ['build/releases/MovieList/win/**']}
+        ]
+      },
+      lin32: {
+        options: {
+          archive: 'build/releases/lin_32_unstable.zip'
+        },
+        files: [
+          {src: ['build/releases/MovieList/linux32/**']}
+        ]
+      },
+      lin64: {
+        options: {
+          archive: 'build/releases/lin_64_unstable.zip'
+        },
+        files: [
+          {src: ['build/releases/MovieList/linux63/**']}
+        ]
+      }
     }
   });
 
@@ -108,9 +145,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-compress');
 
-  grunt.registerTask('default', ['clean:before', 'copy', 'coffee', 'less', 'uglify', 'htmlmin', 'clean:after', 'imagemin', 'nodewebkit']);
+  grunt.registerTask('default', ['clean:before', 'copy', 'coffee', 'less', 'nodewebkit']);
   grunt.registerTask('dev', ['coffee', 'less']);
-  grunt.registerTask('fastbuild', ['clean:before', 'copy', 'coffee', 'less', 'nodewebkit']);
+  grunt.registerTask('release',  ['clean:before', 'copy', 'coffee', 'less', 'uglify', 'htmlmin', 'clean:after', 'imagemin', 'nodewebkit', 'compress']);
 
 };
