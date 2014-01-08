@@ -60,7 +60,7 @@ themeFiles = (err, files) ->
 			$('#themes').append("""
 				<div class="theme">
 					<h1>#{theme.name}</h1>
-					<img src="./themes/#{file}/screenshot.png" class="preview" />
+					<img data-theme="#{file}" src="./themes/#{file}/screenshot.png" class="preview" />
 					<p class="desc">#{theme.desc}</p> 
 				</div>"""
 			)
@@ -115,12 +115,10 @@ copyTheme = (theme) ->
 	)
 
 chooseTheme = ->
-	# TODO: For now there is only one theme.. So just take this one
 	$('#downloadingImages').hide(
 		'drop'
 		->
 			$('#chooseTheme').show 'drop'
-			copyTheme 'beauty'
 	)
 
 currentImage = 0
@@ -174,7 +172,6 @@ fetchDataFromXBMC = (ip) ->
 		'drop'
 		->
 			$('#fetchingData').show 'drop'
-	)
 
 	$.ajax
 		url: "http://#{ip}/jsonrpc"
@@ -217,6 +214,8 @@ fetchDataFromXBMC = (ip) ->
 		success: (data) ->
 			processXBMCData(data.result.movies, ip)
 
+	)
+
 # Lets fire that wood!
 $ ->
 
@@ -230,7 +229,6 @@ $ ->
 	$('#openList').click ->
 		link = fs.realpathSync outFolder
 		gui.Shell.openExternal "file://#{link}/index.html"
-		console.log link
 
 	checkForIpTimer = null
 	$('#xbmcUrl').on(
@@ -249,6 +247,13 @@ $ ->
 					1000
 				)
 				
+	)
+
+	$('#themes').on(
+		'click',
+		'.theme img'
+		->
+			copyTheme $(@).data('theme')
 	)
 
 	# Setup dirs
