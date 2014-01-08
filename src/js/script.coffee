@@ -61,12 +61,12 @@ themeFiles = (err, files) ->
 				<div class="theme">
 					<h1>#{theme.name}</h1>
 					<img data-theme="#{file}" src="./themes/#{file}/screenshot.png" class="preview" />
-					<p class="desc">#{theme.desc}</p> 
+					<p class="desc">#{theme.desc}</p>
 				</div>"""
 			)
 
 isIp = (str) ->
-	return /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(:[0-9]{1,4}){0,1}$/.test(str)
+	/^localhost(:[0-9]{1,4}){0,1}$/.test(str) or /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(:[0-9]{1,4}){0,1}$/.test(str)
 
 checkForXBMC = (ip) ->
 	$.ajax
@@ -173,46 +173,46 @@ fetchDataFromXBMC = (ip) ->
 		->
 			$('#fetchingData').show 'drop'
 
-	$.ajax
-		url: "http://#{ip}/jsonrpc"
-		type: 'POST'
-		contentType: 'application/json'
-		data: """
-			{
-				"jsonrpc": "2.0",
-				"method": "VideoLibrary.GetMovies",
-				"params": {
-					"properties" : [
-						"director",
-						"genre",
-						"plot",
-						"plotoutline",
-						"tagline",
-						"title",
-						"trailer",
-			        	"cast",
-			        	"country", 
-			        	"dateadded",
-			        	"lastplayed",
-			        	"originaltitle",
-			        	"rating",
-			        	"runtime",
-			        	"tag",
-			        	"thumbnail",
-			        	"top250",
-			        	"writer", 
-			        	"year"
-					],
-					"sort": {
-						"order": "descending",
-						"method": "dateadded"
+			$.ajax
+				url: "http://#{ip}/jsonrpc"
+				type: 'POST'
+				contentType: 'application/json'
+				data: """
+					{
+						"jsonrpc": "2.0",
+						"method": "VideoLibrary.GetMovies",
+						"params": {
+							"properties" : [
+								"director",
+								"genre",
+								"plot",
+								"plotoutline",
+								"tagline",
+								"title",
+								"trailer",
+					        	"cast",
+					        	"country", 
+					        	"dateadded",
+					        	"lastplayed",
+					        	"originaltitle",
+					        	"rating",
+					        	"runtime",
+					        	"tag",
+					        	"thumbnail",
+					        	"top250",
+					        	"writer", 
+					        	"year"
+							],
+							"sort": {
+								"order": "descending",
+								"method": "dateadded"
+							}
+						},
+						"id": "libMovies"
 					}
-				},
-				"id": "libMovies"
-			}
-		"""
-		success: (data) ->
-			processXBMCData(data.result.movies, ip)
+				"""
+				success: (data) ->
+					processXBMCData(data.result.movies, ip)
 
 	)
 
