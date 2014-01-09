@@ -6,7 +6,7 @@ Stream = require 'stream'
 ncp = require('ncp').ncp
 gui = require('nw.gui')
 
-numberOfImageDlTries = 5
+numberOfImageDlTries = 3
 
 userHome = ->
 	process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
@@ -87,7 +87,7 @@ downloadImages = (data, ip) ->
 			$('#downloadingImages').show 'drop'
 	)
 
-	donwloadNextImage(data,ip)
+	downloadImage(data,ip)
 
 finished = ->
 	$('#copyTheme').hide(
@@ -121,35 +121,56 @@ chooseTheme = ->
 			$('#chooseTheme').show 'drop'
 	)
 
-currentImage = 0
-donwloadNextImage = (data, ip, attempt = 1) ->
-	if currentImage < data.length
-		mov = data[currentImage]
-		imageUrl = getImagePath(mov,ip)
-		
-		http.get(
-			imageUrl
-			(response) ->
-				imageFile = fs.createWriteStream("#{outFolder}/thumbs/#{mov.movieid}.jpg")
-				response.pipe imageFile
-				donwloadNextImage(data, ip)
-		).on(
-			'error'
-			(e) ->
-				console.log("Error downloading a thumb (try #{attempt}:", e)
+downloadImage = (data, ip, n = 0, attempt = 1) ->
 
-				if attempt < numberOfImageDlTries
-					currentImage--
-
-				donwloadNextImage(data, ip, attempt++)
-		)
-
-		perc = Math.round(currentImage / data.length * 100)
-		$('#downloadingImages .meter').css('width', "#{perc}%")
-
-		currentImage++
-	else
+	if n >= data.length
 		chooseTheme()
+		return 0
+
+	if attempt >= numberOfImageDlTries and attempt > 1
+		console.log "Tried #{n} to often. Skipping this item"
+		updateMeter(data)
+		downloadImage(data, ip, ++n)
+		return 0
+
+	mov = data[n]
+	imageUrl = getImagePath(mov,ip)
+
+	request = http.get(
+		imageUrl
+		(response) ->
+			if response.statusCode is 200
+				imageFile = fs.createWriteStream "#{outFolder}/thumbs/#{mov.movieid}.jpg"
+				response.pipe imageFile
+				updateMeter(data)
+				downloadImage(data, ip, ++n)
+			else
+				console.log "Error downloading a thumb (try #{attempt} [#{n}]): image not found"
+				response.on(
+					'data'
+					->
+						#
+				)
+				downloadImage(data, ip, n, ++attempt)
+	).on(
+		'error'
+		(e) ->
+			console.log("Error downloading a thumb (try #{attempt} [#{n}]):", e)
+			downloadImage(data, ip, n, ++attempt)
+	)
+
+	request.setTimeout(
+		5000,
+		->
+			console.log "Error downloading a thumb (try #{attempt} [#{n}]): timeout"
+			downloadImage(data, ip, n, ++attempt)
+	)
+
+completedImages = 0
+updateMeter = (data) ->
+	completedImages++
+	perc = Math.round(completedImages / data.length * 100)
+	$('#downloadingImages .meter').css('width', "#{perc}%")
 
 processXBMCData = (data, ip) ->
 
