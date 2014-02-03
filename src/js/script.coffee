@@ -4,7 +4,7 @@ rimraf = require 'rimraf'
 path = require "path"
 Stream = require 'stream'
 ncp = require('ncp').ncp
-gui = require('nw.gui')
+gui = require 'nw.gui'
 
 numberOfImageDlTries = 3
 
