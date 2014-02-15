@@ -222,7 +222,8 @@ fetchDataFromXBMC = (ip) ->
 					        	"thumbnail",
 					        	"top250",
 					        	"writer", 
-					        	"year"
+					        	"year",
+					        	"streamdetails"
 							],
 							"sort": {
 								"order": "descending",
