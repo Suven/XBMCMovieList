@@ -131,7 +131,7 @@ module.exports = function(grunt) {
           archive: 'build/releases/lin_64_unstable.zip'
         },
         files: [
-          {src: ['build/releases/MovieList/linux63/**']}
+          {src: ['build/releases/MovieList/linux64/**']}
         ]
       }
     }
