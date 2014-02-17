@@ -4,3 +4,6 @@
 [submodule "src/themes/coverwrap"]
 	path = src/themes/coverwrap
 	url = https://github.com/Suven/theme_coverwrap.git
+[submodule "src/themes/listview"]
+	path = src/themes/listview
+	url = https://github.com/Suven/theme_listview.git
