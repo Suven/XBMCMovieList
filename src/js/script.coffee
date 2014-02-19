@@ -236,10 +236,46 @@ fetchDataFromXBMC = (ip) ->
 				success: (data) ->
 					processXBMCData(data.result.movies, ip)
 
+compareVersions = (a, b) ->
+	regex = /^([0-9]+?)\.([0-9]+?)\.([0-9]+?)$/
+	a = a.match(regex)
+	b = b.match(regex)
+	if (a[1] > b[1])
+		return 1
+	if (a[2] > b[2])
+		return 1
+	if (a[3] > b[3])
+		return 1
+
+	return 0
+
+checkVersion = ->
+	req = http.request(
+		host: "movielist.wbbcoder.de"
+		path: "/version.txt"
+		(response) ->
+
+			version = ""
+			response.setEncoding 'utf8'
+			response.on(
+				'data'
+				(chunk) ->
+					version += chunk
+			)
+			response.on(
+				'end'
+				->
+					if compareVersions(version, gui.App.manifest.version) is 1
+						$('footer .update').html("<a href='#'>Update to #{version}</a>")
+			)
 	)
+
+	req.end()
 
 # Lets fire that wood!
 $ ->
+
+	$('footer .version').html gui.App.manifest.version
 
 	$('#welcome a.button').click ->
 		$('#welcome').hide(
@@ -251,6 +287,13 @@ $ ->
 	$('#openList').click ->
 		link = fs.realpathSync outFolder
 		gui.Shell.openExternal "file://#{link}/index.html"
+
+	$('footer').on(
+		'click'
+		'a'
+		(e) ->
+			gui.Shell.openExternal "http://movielist.wbbcoder.de"
+	)
 
 	checkForIpTimer = null
 	$('#xbmcUrl').on(
@@ -285,6 +328,9 @@ $ ->
 		)  
 	else 
 		createDirs()
+
+	# Check version
+	checkVersion()
 
 	# Check for available themes
 	fs.readdir(themeFolder, themeFiles);

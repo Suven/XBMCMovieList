@@ -16,45 +16,41 @@ header {
 
 	h1 {
 		margin: 0.33em 0;
-}
+	}
 
 	* {
 		color: #ffffff;
-}
-}
-
-
-#location {
-	margin-top: 8em;
-}
-
-#downloadingImages {
-	margin-top: 7em;
-}
-
-#fetchingData {
-	margin-top: 8em;
-}
-
-#chooseTheme {
-	margin-top: 1em;
-	margin-bottom: 1em;
-
-	.theme img {
-		cursor: pointer;
 	}
 }
 
-#copyTheme {
-	margin-top: 10em;
+footer {
+	position: absolute;
+	bottom: 0;
+
+	p {
+		color: #fefefe;
+		margin: 0.2em 0;
+	}
+
+	.update a {
+		color: #5da423;
+	}
 }
 
-#finished {
-	margin: 8em;
+#chooseTheme, #copyTheme, #fetchingData, #downloadingImages, #location, #finished {
+	display: none;
+}
 
-	h2 {
-		display: block;
-		text-align: center;
-		font-weight: bolder;
-	}
+#welcome .buttonwrap {
+	text-align: center;
+}
+
+#chooseTheme .theme img {
+	cursor: pointer;
+}
+
+#finished h2 {
+	display: block;
+	text-align: center;
+	font-weight: bolder;
 }
