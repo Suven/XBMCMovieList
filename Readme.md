@@ -5,7 +5,7 @@ Those generated files are ment to be shared among friends (for example via Dropb
 
 ## Download
 
-A download-link will follow... Hopefully
+The most recent version can be downloaded from [movielist.wbbcoder.de](http://movielist.wbbcoder.de)
 
 ## Building
 
