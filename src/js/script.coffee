@@ -8,6 +8,13 @@ gui = require 'nw.gui'
 
 numberOfImageDlTries = 3
 
+xbmc = (
+	host: "example.net"
+	port: 80
+	username: "xbmc"
+	password: "xbmc"
+)
+
 userHome = ->
 	process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
 
@@ -19,7 +26,6 @@ createDirs = ->
 	fs.mkdirSync path.join(outFolder, "thumbs")
 
 getTheme = (path) ->
-
 	# Dude.. if it ain't even a folder it ain't a fancy theme...
 	if (!fs.lstatSync(path).isDirectory())
 		return undefined
@@ -50,10 +56,8 @@ getThemeInfos = (themeInfoFile) ->
 	JSON.parse fs.readFileSync(themeInfoFile, {encoding: "utf8"})
 
 themeFiles = (err, files) ->
-
 	# There might be other files in the themefolder
 	for file in files
-
 		theme = getTheme(themeFolder + file)
 
 		if theme?
@@ -68,26 +72,60 @@ themeFiles = (err, files) ->
 isIp = (str) ->
 	/^localhost(:[0-9]{1,4}){0,1}$/.test(str) or /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(:[0-9]{1,4}){0,1}$/.test(str)
 
-checkForXBMC = (ip) ->
-	$.ajax
-		url: "http://#{ip}/jsonrpc"
-		type: 'POST'
-		contentType: 'application/json'
-		timeout: 500
-		success: ->
-			fetchDataFromXBMC ip
+checkForXBMC = (ip, username, password) ->
+	match = ip.match(/^(.*?)(:([0-9]{1,4})){0,1}$/)
+	host = match[1]
+	host = "127.0.0.1" if host is "localhost"
+	port = if !match[3]? then 80 else match[3]
 
-getImagePath = (mov, ip) ->
-	"http://#{ip}/image/#{mov.thumbnail.substr(8, mov.thumbnail.length - 9)}"
+	console.log "Checking host #{host} on port #{port}..."
 
-downloadImages = (data, ip) ->
+	req = http.request(
+		hostname: host
+		path: "/jsonrpc"
+		auth: "#{username}:#{password}"
+		port: port
+		method: "POST"
+		headers:
+			 "Content-Type": "application/json"
+		(response) ->
+			if response.statusCode is 200
+				console.log " ...found at #{req._headers.host}"
+				xbmc.host = host
+				xbmc.port = port
+				xbmc.username = username
+				xbmc.password = password
+				req.abort()
+				fetchDataFromXBMC()
+	)
+
+	req.on(
+		'error'
+		(e) ->
+			console.log e
+			console.log " ...not found (or invalid user) at #{req._headers.host}"
+	)
+
+	req.setTimeout(
+		500
+		->
+			console.log " ...not found at #{req._headers.host}"
+			req.abort()
+	)
+
+	req.end()
+
+getImagePath = (mov) ->
+	"/image/#{mov.thumbnail.substr(8, mov.thumbnail.length - 9)}"
+
+downloadImages = (data) ->
 	$('#fetchingData').hide(
 		'drop'
 		->
 			$('#downloadingImages').show 'drop'
 	)
 
-	downloadImage(data,ip)
+	downloadImage data
 
 finished = ->
 	$('#copyTheme').hide(
@@ -121,7 +159,7 @@ chooseTheme = ->
 			$('#chooseTheme').show 'drop'
 	)
 
-downloadImage = (data, ip, n = 0, attempt = 1) ->
+downloadImage = (data, n = 0, attempt = 1) ->
 
 	if n >= data.length
 		chooseTheme()
@@ -130,20 +168,23 @@ downloadImage = (data, ip, n = 0, attempt = 1) ->
 	if attempt >= numberOfImageDlTries and attempt > 1
 		console.log "Tried #{n} to often. Skipping this item"
 		updateMeter(data)
-		downloadImage(data, ip, ++n)
+		downloadImage(data, ++n)
 		return 0
 
 	mov = data[n]
-	imageUrl = getImagePath(mov,ip)
+	imageUrl = getImagePath mov
 
 	request = http.get(
-		imageUrl
+		hostname: xbmc.host
+		path: imageUrl
+		auth: "#{xbmc.username}:#{xbmc.password}"
+		port: xbmc.port
 		(response) ->
 			if response.statusCode is 200
 				imageFile = fs.createWriteStream "#{outFolder}/thumbs/#{mov.movieid}.jpg"
 				response.pipe imageFile
 				updateMeter(data)
-				downloadImage(data, ip, ++n)
+				downloadImage(data, ++n)
 			else
 				console.log "Error downloading a thumb (try #{attempt} [#{n}]): image not found"
 				response.on(
@@ -151,19 +192,19 @@ downloadImage = (data, ip, n = 0, attempt = 1) ->
 					->
 						#
 				)
-				downloadImage(data, ip, n, ++attempt)
+				downloadImage(data, n, ++attempt)
 	).on(
 		'error'
 		(e) ->
 			console.log("Error downloading a thumb (try #{attempt} [#{n}]):", e)
-			downloadImage(data, ip, n, ++attempt)
+			downloadImage(data, n, ++attempt)
 	)
 
 	request.setTimeout(
 		5000,
 		->
 			console.log "Error downloading a thumb (try #{attempt} [#{n}]): timeout"
-			downloadImage(data, ip, n, ++attempt)
+			downloadImage(data, n, ++attempt)
 	)
 
 completedImages = 0
@@ -173,7 +214,6 @@ updateMeter = (data) ->
 	$('#downloadingImages .meter').css('width', "#{perc}%")
 
 processXBMCData = (data, ip) ->
-
 	# Save the JSON
 	dataFile = fs.createWriteStream("#{outFolder}/data.js")
 	outStr = "var data = #{JSON.stringify(data)};"
@@ -185,20 +225,40 @@ processXBMCData = (data, ip) ->
 	stream.pipe dataFile
 
 	# Next step: Get the images
-	downloadImages(data, ip)
+	downloadImages data
 
-fetchDataFromXBMC = (ip) ->
+fetchDataFromXBMC = ->
 
 	$('#location').hide(
 		'drop'
 		->
 			$('#fetchingData').show 'drop'
 
-			$.ajax
-				url: "http://#{ip}/jsonrpc"
-				type: 'POST'
-				contentType: 'application/json'
-				data: """
+			req = http.request(
+				hostname: xbmc.host
+				path: "/jsonrpc"
+				auth: "#{xbmc.username}:#{xbmc.password}"
+				port: xbmc.port
+				method: "POST"
+				headers:
+					 "Content-Type": "application/json"
+				(response) ->
+					data = ""
+					response.setEncoding 'utf8'
+					response.on(
+						'data'
+						(chunk) ->
+							data += chunk
+					)
+					response.on(
+						'end'
+						->
+							data = JSON.parse(data)
+							processXBMCData data.result.movies
+					)
+			)
+
+			req.write """
 					{
 						"jsonrpc": "2.0",
 						"method": "VideoLibrary.GetMovies",
@@ -232,9 +292,10 @@ fetchDataFromXBMC = (ip) ->
 						},
 						"id": "libMovies"
 					}
-				"""
-				success: (data) ->
-					processXBMCData(data.result.movies, ip)
+			"""
+				
+			req.end()
+	)
 
 compareVersions = (a, b) ->
 	regex = /^([0-9]+?)\.([0-9]+?)\.([0-9]+?)$/
@@ -296,11 +357,11 @@ $ ->
 	)
 
 	checkForIpTimer = null
-	$('#xbmcUrl').on(
+	$('#xbmcUrl, #xbmcUser, #xbmcPassword').on(
 		'keyup',
 		->
-			val = $(@).val()
-			if isIp val
+			ip = $("#xbmcUrl").val()
+			if isIp ip
 
 				# Any Timeout set? Reset it
 				clearTimeout checkForIpTimer if checkForIpTimer?
@@ -308,8 +369,8 @@ $ ->
 				# Wait an additional sec for changes
 				checkForIpTimer = setTimeout(
 					->
-						checkForXBMC val
-					1000
+						checkForXBMC(ip, $('#xbmcUser').val(), $('#xbmcPassword').val())	
+					500
 				)
 				
 	)

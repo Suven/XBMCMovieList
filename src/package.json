@@ -1,7 +1,7 @@
 {
   "name": "MovieList",
   "main": "index.html",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "no-edit-menu": true,
   "window": {
     "icon": "img/icon.png",

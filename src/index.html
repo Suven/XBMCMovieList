@@ -11,7 +11,7 @@
 <body>
 
   <header>
-  <div class="row">
+    <div class="row">
       <div class="column small-12">
         <h1>XBMCMovieList</h1>
       </div>
@@ -33,6 +33,15 @@
       <section id="location">
        <p>Lets start of by locating your XBMC-installation by providing its IP</p>
        <input id="xbmcUrl" type="text" placeholder="10.0.0.3">
+       <p>If your XBMC-Webserver is password-protected, you also need to enter your login-credentials</p>
+       <div class="row">
+         <div class="column small-6">
+           <input id="xbmcUser" type="text" placeholder="username">
+         </div>
+         <div class="column small-6">
+           <input id="xbmcPassword" type="text" placeholder="password">
+         </div>
+       </div>
      </section>
 
      <section id="fetchingData">
@@ -55,12 +64,12 @@
      </div>    
    </section>
 
-    <section id="copyTheme">
+   <section id="copyTheme">
      <h2>Your theme is being applied</h2>
      <p>That should not take too long. Prepare for great joy!</p>  
    </section>
 
-    <section id="finished">
+   <section id="finished">
      <h2>\o/</h2>
      <p>Wooohooo! Your final list is stored in <a href="#" id="openList">./out</a></p>  
      <p>You may also <a href="./index.html">start over</a> again</p>
