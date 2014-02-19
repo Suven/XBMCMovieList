@@ -3,41 +3,26 @@
 
 html,body {
 	font-size: 12px;
+	height: 260px;
 }
 
-body {
-	background-color: #eee;
-	background-image: url('../img/grey.png'), url('../img/hob.jpg');
-	background-size: 397px 322px, auto 500px;
-	background-position: center center, center center;
-	background-attachment: fixed, fixed;
+header, footer {
+	background-color: #222222; // #2ba6cb;
+	width: 100%;
 }
 
-.row {
-	max-width: 80em;
+header {
+	margin-bottom: 1em;
+
+	h1 {
+		margin: 0.33em 0;
 }
 
-#chooseTheme, #copyTheme, #fetchingData, #downloadingImages, #location, #finished {
-	display: none;
+	* {
+		color: #ffffff;
+}
 }
 
-section {
-	background-color: rgba(255, 255, 255, 0.33);
-	border-radius: 5px;
-	border-color: none;
-	margin: 0;
-	padding: 3px 10px;
-	box-shadow: rgba(0,0,0,0.2) 0 0 6px;
-}
-
-#welcome .buttonwrap {
-	margin-top: 1em;
-	text-align: center;
-}
-
-#welcome {
-	margin-top: 6em;
-}
 
 #location {
 	margin-top: 8em;
