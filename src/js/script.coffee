@@ -335,8 +335,10 @@ checkVersion = ->
 
 # Lets fire that wood!
 $ ->
-
 	$('footer .version').html gui.App.manifest.version
+
+	# Show the Node-Window
+	gui.Window.get().show()
 
 	$('#welcome a.button').click ->
 		$('#welcome').hide(
@@ -394,4 +396,4 @@ $ ->
 	checkVersion()
 
 	# Check for available themes
-	fs.readdir(themeFolder, themeFiles);
+	fs.readdir(themeFolder, themeFiles)

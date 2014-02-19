@@ -8,7 +8,8 @@
     "resizable": false,
     "toolbar": false,
     "width": 480,
-    "height": 260
+    "height": 260,
+    "show": false
   },
   "devDependencies": {
     "rimraf": "2.1",
