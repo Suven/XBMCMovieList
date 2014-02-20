@@ -57,17 +57,27 @@ getThemeInfos = (themeInfoFile) ->
 
 themeFiles = (err, files) ->
 	# There might be other files in the themefolder
+	c = 0
 	for file in files
+		c++
 		theme = getTheme(themeFolder + file)
 
 		if theme?
 			$('#themes').append("""
-				<div class="theme">
+				<div class="theme column small-6">
 					<h1>#{theme.name}</h1>
 					<img data-theme="#{file}" src="./themes/#{file}/screenshot.png" class="preview" />
 					<p class="desc">#{theme.desc}</p>
 				</div>"""
 			)
+
+	if c % 2 is 1
+		$('#themes').append("""
+			<div class="theme column small-6">
+				<h1></h1>
+				<p class="desc"></p>
+			</div>"""
+		)
 
 isIp = (str) ->
 	/^localhost(:[0-9]{1,4}){0,1}$/.test(str) or /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(:[0-9]{1,4}){0,1}$/.test(str)
